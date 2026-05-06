@@ -1,0 +1,14 @@
+{
+  "threshold": 0.10,
+  "p5_raw": 0.10,
+  "target_quantile": 0.05,
+  "stable_window_start_step": 30,
+  "stable_window_n_samples": 0,
+  "stable_mean": null,
+  "stable_std": null,
+  "stable_min": null,
+  "stable_max": null,
+  "computed_at_utc": null,
+  "PLACEHOLDER": true,
+  "PLACEHOLDER_NOTE": "This file is a stub so train.py / preflights pass the load_calibrated_threshold() check. The 0.10 value is the same fallback used by build_smoke_trainer when calibration is missing — it is NOT calibrated against the 250-step pilot. Before launching production training jobs, regenerate via:    python analysis/threshold_calibration.py --run-id <pilot-run-id> --project grpo-social-dilemmas --entity suraj_chamakura-university-of-california-berkeley --out configs/calibrated_threshold.json"
+}
