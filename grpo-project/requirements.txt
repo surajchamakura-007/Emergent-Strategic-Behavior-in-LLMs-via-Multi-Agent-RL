@@ -1,0 +1,38 @@
+# Stage 1 dependency spec — matches configs/stack_versions.py ranges.
+#
+# Authority: PRD v6.1 §1 changelog ("Stack version pin policy → ranges").
+# `assert_versions()` runs at the top of every training/preflight job and
+# halts if any of the pinned packages is out of range.
+#
+# Install order matters on V100 (compute capability 7.0, FP16 only): install
+# torch FIRST so bitsandbytes builds against the right CUDA. On Bridges-2
+# do `module load cuda/12.1` (or whatever your site provides) before pip.
+#
+# After install, sanity check:
+#   python -c "from configs.stack_versions import assert_versions; assert_versions()"
+
+# --- Core stack (pinned ranges from stack_versions.py) ---
+torch>=2.4.0
+transformers>=4.57.0
+peft>=0.18.0
+trl>=1.0.0,<1.1.0
+vllm>=0.10.2,<0.12.0
+bitsandbytes>=0.43.0
+
+# --- Required by core stack at runtime (not version-pinned by us) ---
+accelerate>=0.34         # TRL trainer's distributed wrapper
+datasets>=2.20           # train.py uses Dataset.from_dict()
+sentencepiece            # Qwen tokenizer
+safetensors              # adapter file format
+
+# --- Project deps ---
+numpy>=1.26              # rngs, callback windows, sigmoid arrays
+pyyaml>=6.0              # config YAML loading
+wandb>=0.17              # offline logging + manual sync
+scipy>=1.13              # analysis/fit_sigmoids.py (curve_fit)
+
+# --- Optional: only needed if running the GPT-4o-mini opponent in eval ---
+openai>=1.40             # evaluation/opponents.py:GPT4oMiniOpponent
+
+# --- Tests (skip on cluster if you don't run pytest there) ---
+pytest>=8.0

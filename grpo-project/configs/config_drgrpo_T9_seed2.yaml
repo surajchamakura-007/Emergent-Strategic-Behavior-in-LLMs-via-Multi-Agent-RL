@@ -1,0 +1,17 @@
+# Stage 1, run 4 of 4 — Dr. GRPO at T=9, seed 2.
+
+run_name: drgrpo_T9_seed2_stage1
+seed: 2
+
+payoffs:
+  T: 9.0
+  R: 3.0
+  P: 1.0
+  S: 0.0
+
+wandb_tags:
+  - stage1
+  - drgrpo
+  - prd_v6_1
+  - T9
+  - seed2

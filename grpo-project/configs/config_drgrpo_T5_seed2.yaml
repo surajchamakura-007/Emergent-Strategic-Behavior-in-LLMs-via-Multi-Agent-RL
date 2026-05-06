@@ -1,0 +1,18 @@
+# Stage 1, run 2 of 4 — Dr. GRPO at T=5, seed 2.
+# Paired-seed companion to drgrpo_T5_seed1 (PRD v6.1 D4: 2 seeds × 2 T values).
+
+run_name: drgrpo_T5_seed2_stage1
+seed: 2
+
+payoffs:
+  T: 5.0
+  R: 3.0
+  P: 1.0
+  S: 0.0
+
+wandb_tags:
+  - stage1
+  - drgrpo
+  - prd_v6_1
+  - T5
+  - seed2
