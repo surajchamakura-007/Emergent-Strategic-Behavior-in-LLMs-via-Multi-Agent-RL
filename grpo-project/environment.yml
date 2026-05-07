@@ -1,0 +1,66 @@
+# Stage 1 conda environment — Bridges-2 V100-32GB compatible.
+#
+# Authority: requirements.txt (pinned ranges from configs/stack_versions.py).
+#
+# Why this is mostly pip-in-conda. The ML stack here (vllm, trl, bitsandbytes,
+# peft) only ships well-maintained packages on PyPI; conda-forge has stale
+# versions that fail the stack_versions check. Pattern: conda gives us a
+# clean Python interpreter + pip; everything ML goes through pip.
+#
+# CUDA: comes from `module load cuda/12.1` on the cluster, NOT from conda.
+# Don't add `cudatoolkit` here — it'll fight the system CUDA.
+#
+# Install:
+#   module load anaconda3            # or whatever your cluster names it
+#   module load cuda/12.1
+#   conda env create -f environment.yml
+#   conda activate stage1
+#   python -c "from configs.stack_versions import assert_versions; assert_versions()"
+#
+# Update later (if a dependency changes):
+#   conda env update -f environment.yml --prune
+
+name: stage1
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  # --- Conda layer: only the things conda does well ---
+  - python=3.11
+  - pip>=24.0
+  - git                         # convenient if friend wants to git pull updates
+  - ca-certificates             # SSL trust store; HF/W&B downloads need this
+
+  # --- Everything else via pip (better wheels, current versions) ---
+  - pip:
+      # Torch first — the --extra-index-url ensures the CUDA 12.1 wheel.
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      - torch>=2.4.0
+
+      # Core ML stack — pinned ranges match configs/stack_versions.py.
+      # assert_versions() halts the job if anything is out of range.
+      - transformers>=4.57.0
+      - peft>=0.18.0
+      - trl>=1.0.0,<1.1.0
+      - vllm>=0.10.2,<0.12.0
+      - bitsandbytes>=0.43.0
+
+      # Required by the core stack at runtime.
+      - accelerate>=0.34        # TRL's distributed wrapper
+      - datasets>=2.20          # train.py uses Dataset.from_dict()
+      - sentencepiece           # Qwen tokenizer
+      - safetensors             # adapter file format
+
+      # Project deps.
+      - numpy>=1.26             # rngs, callback windows, sigmoid arrays
+      - pyyaml>=6.0             # config YAML loading
+      - wandb>=0.17             # offline logging + manual sync
+      - scipy>=1.13             # analysis/fit_sigmoids.py (curve_fit)
+
+      # Optional: only needed if running GPT-4o-mini eval opponent.
+      - openai>=1.40
+
+      # Tests.
+      - pytest>=8.0
